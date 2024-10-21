@@ -1,0 +1,12 @@
+---
+version: 1.2.3
+title: API Gateway V2 HTTP Response with valid empty fields
+file: ./test/glambda_test.gleam
+test_name: api_gateway_v2_http_response_valid_empty_fields_test
+---
+{
+  "statusCode": 200,
+  "headers": {},
+  "isBase64Encoded": false,
+  "cookies": []
+}

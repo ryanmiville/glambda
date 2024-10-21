@@ -1,0 +1,64 @@
+---
+version: 1.2.3
+title: API Gateway V2 HTTP request with Lambda authorizer
+file: ./test/glambda_test.gleam
+test_name: api_gateway_v2_http_request_lambda_authorizer_test
+---
+ApiGatewayProxyEventV2(
+  version: "2.0",
+  route_key: "$default",
+  raw_path: "/my/path",
+  raw_query_string: "parameter1=value1&parameter1=value2&parameter2=value",
+  cookies: Some(["cookie1", "cookie2"]),
+  headers: dict.from_list([
+    #("Header1", "value1"),
+    #("Header2", "value2"),
+  ]),
+  query_string_parameters: Some(dict.from_list([
+    #("parameter1", "value1,value2"),
+    #("parameter2", "value"),
+  ])),
+  path_parameters: Some(dict.from_list([
+    #("proxy", "hello/world"),
+  ])),
+  stage_variables: Some(dict.from_list([
+    #("stageVariable1", "value1"),
+    #("stageVariable2", "value2"),
+  ])),
+  request_context: ApiGatewayRequestContextV2(
+    route_key: "$default",
+    account_id: "123456789012",
+    stage: "$default",
+    request_id: "id",
+    authorizer: Some(Lambda(lambda: dict.from_list([
+      #("key", "value"),
+    ]))),
+    api_id: "api-id",
+    domain_name: "id.execute-api.us-east-1.amazonaws.com",
+    domain_prefix: "id",
+    time: "12/Mar/2020:19:03:58+0000",
+    time_epoch: 1583348638390,
+    http: ApiGatewayEventRequestContextHttp(
+      method: "GET",
+      path: "/my/path",
+      protocol: "HTTP/1.1",
+      source_ip: "IP",
+      user_agent: "agent",
+    ),
+    authentication: Some(ApiGatewayEventRequestContextAuthentication(client_cert: APIGatewayEventClientCertificate(
+      client_cert_pem: "-----BEGIN CERTIFICATE-----
+MIIEZTCCAk0CAQEwDQ...",
+      issuer_dn: "C=US,ST=Washington,L=Seattle,O=Amazon Web Services,OU=Security,CN=My Private CA",
+      serial_number: "1",
+      subject_dn: "C=US,ST=Washington,L=Seattle,O=Amazon Web Services,OU=Security,CN=My Client",
+      validity: APIGatewayEventValidity(
+        not_after: "Aug  5 00:28:21 2120 GMT",
+        not_before: "Aug 29 00:28:21 2020 GMT",
+      ),
+    ))),
+  ),
+  body: Some("{
+	"a": 1
+}"),
+  is_base64_encoded: False,
+)

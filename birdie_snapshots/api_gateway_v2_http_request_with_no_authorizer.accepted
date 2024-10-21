@@ -1,0 +1,58 @@
+---
+version: 1.2.3
+title: API Gateway V2 HTTP request with no authorizer
+file: ./test/glambda_test.gleam
+test_name: api_gateway_v2_http_request_no_authorizer_test
+---
+ApiGatewayProxyEventV2(
+  version: "2.0",
+  route_key: "$default",
+  raw_path: "/",
+  raw_query_string: "",
+  cookies: None,
+  headers: dict.from_list([
+    #("accept", "*/*"),
+    #("content-length", "0"),
+    #("host", "aaaaaaaaaa.execute-api.us-west-2.amazonaws.com"),
+    #("user-agent", "curl/7.58.0"),
+    #("x-amzn-trace-id", "Root=1-5e9f0c65-1de4d666d4dd26aced652b6c"),
+    #("x-forwarded-for", "1.2.3.4"),
+    #("x-forwarded-port", "443"),
+    #("x-forwarded-proto", "https"),
+  ]),
+  query_string_parameters: None,
+  path_parameters: None,
+  stage_variables: None,
+  request_context: ApiGatewayRequestContextV2(
+    route_key: "$default",
+    account_id: "123456789012",
+    stage: "$default",
+    request_id: "LV7fzho-PHcEJPw=",
+    authorizer: None,
+    api_id: "aaaaaaaaaa",
+    domain_name: "aaaaaaaaaa.execute-api.us-west-2.amazonaws.com",
+    domain_prefix: "aaaaaaaaaa",
+    time: "21/Apr/2020:15:08:21 +0000",
+    time_epoch: 1587481701067,
+    http: ApiGatewayEventRequestContextHttp(
+      method: "GET",
+      path: "/",
+      protocol: "HTTP/1.1",
+      source_ip: "1.2.3.4",
+      user_agent: "curl/7.58.0",
+    ),
+    authentication: Some(ApiGatewayEventRequestContextAuthentication(client_cert: APIGatewayEventClientCertificate(
+      client_cert_pem: "-----BEGIN CERTIFICATE-----
+MIIEZTCCAk0CAQEwDQ...",
+      issuer_dn: "C=US,ST=Washington,L=Seattle,O=Amazon Web Services,OU=Security,CN=My Private CA",
+      serial_number: "1",
+      subject_dn: "C=US,ST=Washington,L=Seattle,O=Amazon Web Services,OU=Security,CN=My Client",
+      validity: APIGatewayEventValidity(
+        not_after: "Aug  5 00:28:21 2120 GMT",
+        not_before: "Aug 29 00:28:21 2020 GMT",
+      ),
+    ))),
+  ),
+  body: None,
+  is_base64_encoded: False,
+)
