@@ -1,5 +1,6 @@
 import { List } from "./gleam.mjs";
 import { Some, None, unwrap } from "../gleam_stdlib/gleam/option.mjs";
+import * as $dict from "../gleam_stdlib/gleam/dict.mjs";
 import {
   ApiGatewayProxyEventV2,
   ApiGatewayRequestContextV2,
@@ -26,10 +27,10 @@ export function to_api_gateway_proxy_event_v2(event) {
     event.rawPath,
     event.rawQueryString,
     maybeList(event.cookies),
-    event.headers,
-    maybe(event.queryStringParameters),
-    maybe(event.pathParameters),
-    maybe(event.stageVariables),
+    toDict(event.headers),
+    maybeDict(event.queryStringParameters),
+    maybeDict(event.pathParameters),
+    maybeDict(event.stageVariables),
     to_request_context(event.requestContext),
     maybe(event.body),
     event.isBase64Encoded,
@@ -134,6 +135,13 @@ function maybeList(a) {
   return new None();
 }
 
+function maybeDict(a) {
+  if (a) {
+    return new Some(toDict(a));
+  }
+  return new None();
+}
+
 export function from_api_gateway_proxy_result_v2(result) {
   return {
     statusCode: result.status_code,
@@ -163,7 +171,6 @@ function to_cognito_identity(identity) {
   if (!identity) {
     return undefined;
   }
-  console.log(identity);
   return new CognitoIdentity(
     identity.cognitoIdentityId,
     identity.cognitoIdentityPoolId,
@@ -199,4 +206,8 @@ function to_client_context_env(env) {
     env.locale,
     env.timezone,
   );
+}
+
+function toDict(obj) {
+  return $dict.from_list(List.fromArray(Object.entries(obj)));
 }

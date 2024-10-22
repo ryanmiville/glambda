@@ -1,7 +1,17 @@
+import gleam/bit_array
+import gleam/bool
 import gleam/dict.{type Dict}
 import gleam/dynamic.{type Dynamic}
+import gleam/http
+import gleam/http/request.{type Request, Request}
+import gleam/http/response.{type Response}
+import gleam/io
 import gleam/javascript/promise.{type Promise}
-import gleam/option.{type Option}
+import gleam/list
+import gleam/option.{type Option, None, Some}
+import gleam/regex
+import gleam/result
+import gleam/string
 
 pub type JsEvent
 
@@ -180,6 +190,108 @@ pub fn to_handler(
     handler(event, ctx)
     |> promise.map(from_result)
   }
+}
+
+pub fn http_handler(
+  handler: fn(Request(BitArray), Context) -> Promise(Response(BitArray)),
+) -> JsHandler {
+  api_gateway_proxy_v2_handler(fn(event, ctx) {
+    event
+    |> create_request
+    |> handler(ctx)
+    |> promise.map(create_response)
+  })
+}
+
+fn create_request(event: ApiGatewayProxyEventV2) -> Request(BitArray) {
+  io.debug(event.headers)
+  let method =
+    event.request_context.http.method
+    |> http.parse_method
+    |> result.unwrap(http.Get)
+  let headers = case event.cookies {
+    Some([_] as cookies) -> {
+      event.headers
+      |> dict.insert("cookie", string.join(cookies, "; "))
+      |> dict.to_list
+    }
+    _ -> dict.to_list(event.headers)
+  }
+  let body =
+    event.body
+    |> body_bit_array(event.is_base64_encoded)
+    |> result.unwrap(<<>>)
+  let host = event.request_context.domain_name
+  let path = event.raw_path
+  let query = string.to_option(event.raw_query_string)
+
+  Request(
+    method:,
+    headers:,
+    body:,
+    scheme: http.Https,
+    host:,
+    port: None,
+    path:,
+    query:,
+  )
+}
+
+fn body_bit_array(
+  body: Option(String),
+  is_base64_encoded: Bool,
+) -> Result(BitArray, Nil) {
+  use body <- result.try(option.to_result(body, Nil))
+  use <- bool.guard(!is_base64_encoded, Ok(bit_array.from_string(body)))
+  use body <- result.try(bit_array.base64_decode(body))
+  Ok(body)
+}
+
+fn create_response(response: Response(BitArray)) -> ApiGatewayProxyResultV2 {
+  let is_content_type_binary =
+    response.get_header(response, "content-type")
+    |> result.map(is_content_type_binary)
+
+  let is_base64_encoded = case is_content_type_binary {
+    Ok(True) -> True
+    _ -> {
+      response.get_header(response, "content-encoding")
+      |> result.map(is_content_encoding_binary)
+      |> result.unwrap(False)
+    }
+  }
+
+  let body = case is_base64_encoded {
+    True -> bit_array.base64_encode(response.body, False)
+    False -> bit_array.to_string(response.body) |> result.unwrap("")
+  }
+  let cookies = get_cookies(response)
+
+  ApiGatewayProxyResultV2(
+    status_code: response.status,
+    headers: dict.from_list(response.headers),
+    body: string.to_option(body),
+    is_base64_encoded:,
+    cookies:,
+  )
+}
+
+fn get_cookies(response: Response(a)) -> List(String) {
+  response.get_cookies(response)
+  |> list.map(fn(cookie) { cookie.0 <> "=" <> cookie.1 })
+}
+
+fn is_content_type_binary(content_type: String) -> Bool {
+  let assert Ok(re) =
+    regex.from_string(
+      "!/^(text\\/(plain|html|css|javascript|csv).*|application\\/(.*json|.*xml).*|image\\/svg\\+xml.*)$/",
+    )
+  regex.check(re, content_type)
+}
+
+fn is_content_encoding_binary(content_encoding: String) -> Bool {
+  let assert Ok(re) = regex.from_string("/^(gzip|deflate|compress|br)/")
+  regex.check(re, content_encoding)
 }
 
 pub fn api_gateway_proxy_v2_handler(
