@@ -1,5 +1,6 @@
 import gleam/bit_array
 import gleam/bool
+import gleam/bytes_builder
 import gleam/dict.{type Dict}
 import gleam/dynamic.{type Dynamic}
 import gleam/http
@@ -12,6 +13,9 @@ import gleam/option.{type Option, None, Some}
 import gleam/regex
 import gleam/result
 import gleam/string
+import gleam/string_builder
+import wisp
+import wisp/internal
 
 pub type JsEvent
 
@@ -201,6 +205,44 @@ pub fn http_handler(
     |> handler(ctx)
     |> promise.map(create_response)
   })
+}
+
+pub fn wisp_handler(
+  handler: fn(wisp.Request, Context) -> Promise(wisp.Response),
+) -> JsHandler {
+  api_gateway_proxy_v2_handler(fn(event, ctx) {
+    event
+    |> create_wisp_request
+    |> handler(ctx)
+    |> promise.map(from_wisp_response)
+  })
+}
+
+fn create_wisp_request(event: ApiGatewayProxyEventV2) -> wisp.Request {
+  let read = case event.body {
+    Some(body) ->
+      internal.Chunk(bit_array.from_string(body), fn(_size) {
+        Ok(internal.ReadingFinished)
+      })
+    None -> internal.ReadingFinished
+  }
+  create_request(event)
+  |> request.set_body(internal.make_connection(
+    fn(_size) { Ok(read) },
+    wisp.random_string(64),
+  ))
+}
+
+fn from_wisp_response(response: wisp.Response) -> ApiGatewayProxyResultV2 {
+  let body = case response.body {
+    wisp.Empty -> <<>>
+    wisp.Bytes(builder) -> bytes_builder.to_bit_array(builder)
+    wisp.Text(builder) ->
+      string_builder.to_string(builder) |> bit_array.from_string
+    wisp.File(_path) -> panic as "not implemented"
+  }
+  response.set_body(response, body)
+  |> create_response
 }
 
 fn create_request(event: ApiGatewayProxyEventV2) -> Request(BitArray) {
