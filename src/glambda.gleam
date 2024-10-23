@@ -178,8 +178,7 @@ pub type ApiGatewayProxyResultV2 {
 // --- Adapters ---------------------------------------------------------------
 
 pub fn http_handler(
-  handler: fn(Request(Option(String)), Context) ->
-    Promise(Response(Option(String))),
+  handler: Handler(Request(Option(String)), Response(Option(String))),
 ) -> JsHandler {
   api_gateway_proxy_v2_handler(fn(event, ctx) {
     event
