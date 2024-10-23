@@ -96,6 +96,14 @@ pub fn api_gateway_v2_http_response_valid_empty_fields_test() {
   |> birdie.snap("API Gateway V2 HTTP Response with valid empty fields")
 }
 
+// pub fn wisp_request_test() {
+//   js_event("./test/testdata/apigw-v2-request-jwt-authorizer.json")
+//   |> glambda.to_api_gateway_proxy_event_v2
+//   |> glambda.create_request
+//   |> format
+//   |> birdie.snap("Wisp request from API Gateway V2 HTTP request with JWT authorizer")
+// }
+
 pub fn format(value: a) -> String {
   pprint.with_config(value, Config(Unstyled, BitArraysAsString, Labels))
 }

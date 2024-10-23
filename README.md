@@ -18,10 +18,10 @@ gleam add glambda
 ```gleam
 import glambda.{type Context}
 import gleam/javascript/promise.{type Promise}
-import gleam/json
-import wisp.{type Request, type Reponse}
+import gleam/string_builder
+import wisp.{type Request, type Response}
 
-fn handle_request(req: Request, ctx: Context) -> Promise(Response) {
+fn handle_request(_req: Request, ctx: Context) -> Promise(Response) {
   string_builder.from_string(
     "{\"functionName\": \"" <> ctx.function_name <> "\"}",
   )

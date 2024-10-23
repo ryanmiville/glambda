@@ -192,7 +192,7 @@ pub fn wisp_handler(
   })
 }
 
-fn create_request(event: ApiGatewayProxyEventV2) -> Request {
+pub fn create_request(event: ApiGatewayProxyEventV2) -> Request {
   let read = case event.body {
     Some(body) ->
       internal.Chunk(bit_array.from_string(body), fn(_size) {
