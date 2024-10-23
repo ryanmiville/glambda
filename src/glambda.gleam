@@ -1,19 +1,15 @@
 import gleam/bit_array
-import gleam/bytes_builder
 import gleam/dict.{type Dict}
 import gleam/dynamic.{type Dynamic}
 import gleam/http
-import gleam/http/request.{Request as HttpRequest}
-import gleam/http/response
+import gleam/http/request.{type Request, Request}
+import gleam/http/response.{type Response, Response}
 import gleam/javascript/promise.{type Promise}
 import gleam/list
 import gleam/option.{type Option, None, Some}
 import gleam/regex
 import gleam/result
 import gleam/string
-import gleam/string_builder
-import wisp.{type Request, type Response}
-import wisp/internal
 
 pub type JsEvent
 
@@ -181,8 +177,9 @@ pub type ApiGatewayProxyResultV2 {
 
 // --- Adapters ---------------------------------------------------------------
 
-pub fn wisp_handler(
-  handler: fn(Request, Context) -> Promise(Response),
+pub fn http_handler(
+  handler: fn(Request(Option(String)), Context) ->
+    Promise(Response(Option(String))),
 ) -> JsHandler {
   api_gateway_proxy_v2_handler(fn(event, ctx) {
     event
@@ -192,17 +189,8 @@ pub fn wisp_handler(
   })
 }
 
-pub fn create_request(event: ApiGatewayProxyEventV2) -> Request {
-  let read = case event.body {
-    Some(body) ->
-      internal.Chunk(bit_array.from_string(body), fn(_size) {
-        Ok(internal.ReadingFinished)
-      })
-    None -> internal.ReadingFinished
-  }
-
-  let body =
-    internal.make_connection(fn(_size) { Ok(read) }, wisp.random_string(64))
+pub fn create_request(event: ApiGatewayProxyEventV2) -> Request(Option(String)) {
+  let body = event.body
   let method =
     event.request_context.http.method
     |> http.parse_method
@@ -219,7 +207,7 @@ pub fn create_request(event: ApiGatewayProxyEventV2) -> Request {
   let path = event.raw_path
   let query = string.to_option(event.raw_query_string)
 
-  HttpRequest(
+  Request(
     method:,
     headers:,
     body:,
@@ -231,20 +219,29 @@ pub fn create_request(event: ApiGatewayProxyEventV2) -> Request {
   )
 }
 
-fn from_response(response: Response) -> ApiGatewayProxyResultV2 {
+fn from_response(response: Response(Option(String))) -> ApiGatewayProxyResultV2 {
+  let is_base64_encoded = is_base64_encoded(response)
   let body = case response.body {
-    wisp.Empty -> <<>>
-    wisp.Bytes(builder) -> bytes_builder.to_bit_array(builder)
-    wisp.Text(builder) ->
-      string_builder.to_string(builder) |> bit_array.from_string
-    wisp.File(_path) -> panic as "file body not supported yet"
+    Some(body) if is_base64_encoded -> Some(base64_encode(body))
+    _ -> response.body
   }
+  let cookies = get_cookies(response)
 
+  ApiGatewayProxyResultV2(
+    status_code: response.status,
+    headers: dict.from_list(response.headers),
+    body: body,
+    is_base64_encoded:,
+    cookies:,
+  )
+}
+
+fn is_base64_encoded(response: Response(Option(String))) {
   let is_content_type_binary =
     response.get_header(response, "content-type")
     |> result.map(is_content_type_binary)
 
-  let is_base64_encoded = case is_content_type_binary {
+  case is_content_type_binary {
     Ok(True) -> True
     _ -> {
       response.get_header(response, "content-encoding")
@@ -252,23 +249,15 @@ fn from_response(response: Response) -> ApiGatewayProxyResultV2 {
       |> result.unwrap(False)
     }
   }
-
-  let body = case is_base64_encoded {
-    True -> bit_array.base64_encode(body, False)
-    False -> bit_array.to_string(body) |> result.unwrap("")
-  }
-  let cookies = get_cookies(response)
-
-  ApiGatewayProxyResultV2(
-    status_code: response.status,
-    headers: dict.from_list(response.headers),
-    body: string.to_option(body),
-    is_base64_encoded:,
-    cookies:,
-  )
 }
 
-fn get_cookies(response: Response) -> List(String) {
+fn base64_encode(body: String) -> String {
+  body
+  |> bit_array.from_string
+  |> bit_array.base64_encode(False)
+}
+
+fn get_cookies(response: Response(_)) -> List(String) {
   response.get_cookies(response)
   |> list.map(fn(cookie) { cookie.0 <> "=" <> cookie.1 })
 }

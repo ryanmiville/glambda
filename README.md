@@ -5,7 +5,7 @@ Write AWS Lambda functions in Gleam!
 [![Package Version](https://img.shields.io/hexpm/v/glambda)](https://hex.pm/packages/glambda)
 [![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/glambda/)
 
-Write your Lambda function as a [wisp](https://github.com/gleam-wisp/wisp) handler, or accept direct events as normal Gleam types.
+Write your Lambda function as an [http](https://github.com/gleam-lang/http) handler, or accept direct events as normal Gleam types.
 
 Glambda works by compiling your Gleam code to JavaScript, and then using the AWS Lambda Node.js runtime to run your code.
 
@@ -17,20 +17,26 @@ gleam add glambda
 
 ```gleam
 import glambda.{type Context}
+import gleam/http/request.{type Request}
+import gleam/http/response.{type Response, Response}
 import gleam/javascript/promise.{type Promise}
-import gleam/string_builder
-import wisp.{type Request, type Response}
+import gleam/option.{type Option, Some}
 
-fn handle_request(_req: Request, ctx: Context) -> Promise(Response) {
-  string_builder.from_string(
-    "{\"functionName\": \"" <> ctx.function_name <> "\"}",
+fn handle_request(
+  _req: Request(Option(String)),
+  ctx: Context,
+) -> Promise(Response(Option(String))) {
+  let json = "{\"functionName\": \"" <> ctx.function_name <> "\"}"
+  Response(
+    200,
+    [#("content-type", "application/json; charset=utf-8")],
+    Some(json),
   )
-  |> wisp.json_response(200)
   |> promise.resolve
 }
 
 pub fn handler(event, ctx) {
-  glambda.wisp_handler(handle_request)(event, ctx)
+  glambda.http_handler(handle_request)(event, ctx)
 }
 ```
 
