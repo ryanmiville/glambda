@@ -15,7 +15,10 @@ pub type JsEvent
 
 pub type JsContext
 
-pub type JsResult
+pub type JsResult {
+  JsResult
+  Void
+}
 
 pub type JsHandler =
   fn(JsEvent, JsContext) -> Promise(JsResult)
@@ -175,6 +178,21 @@ pub type ApiGatewayProxyResultV2 {
   )
 }
 
+// --- EventBridge ------------------------------------------------------------
+
+pub type EventBridgeEvent {
+  EventBridgeEvent(
+    id: String,
+    version: String,
+    account: String,
+    time: String,
+    region: String,
+    resources: List(String),
+    source: String,
+    detail: Dynamic,
+  )
+}
+
 // --- Adapters ---------------------------------------------------------------
 
 pub fn http_handler(
@@ -285,6 +303,15 @@ pub fn api_gateway_proxy_v2_handler(
   }
 }
 
+pub fn eventbridge_handler(handler: Handler(EventBridgeEvent, Nil)) -> JsHandler {
+  fn(event: JsEvent, ctx: JsContext) -> Promise(JsResult) {
+    let event = to_eventbridge_event(event)
+    let ctx = to_context(ctx)
+    handler(event, ctx)
+    |> promise.map(fn(_) { Void })
+  }
+}
+
 // --- FFI --------------------------------------------------------------------
 
 @external(javascript, "./glambda_ffi.mjs", "toApiGatewayProxyEventV2")
@@ -297,3 +324,6 @@ pub fn from_api_gateway_proxy_result_v2(
 
 @external(javascript, "./glambda_ffi.mjs", "toContext")
 fn to_context(ctx: JsContext) -> Context
+
+@external(javascript, "./glambda_ffi.mjs", "toEventBridgeEvent")
+pub fn to_eventbridge_event(event: JsEvent) -> EventBridgeEvent

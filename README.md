@@ -13,7 +13,7 @@ Glambda works by compiling your Gleam code to JavaScript, and then using the AWS
 gleam add glambda
 ```
 
-## Wisp Handler
+## HTTP Handler
 
 ```gleam
 import glambda.{type Context}

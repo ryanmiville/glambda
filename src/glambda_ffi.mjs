@@ -18,6 +18,7 @@ import {
   ClientContextClient,
   ClientContextEnv,
   ApiGatewayEventValidity,
+  EventBridgeEvent,
 } from "./glambda.mjs";
 
 export function toApiGatewayProxyEventV2(event) {
@@ -210,4 +211,17 @@ function toClientContextEnv(env) {
 
 function toDict(obj) {
   return $dict.from_list(List.fromArray(Object.entries(obj)));
+}
+
+export function toEventBridgeEvent(event) {
+  return new EventBridgeEvent(
+    event.id,
+    event.version,
+    event.account,
+    event.time,
+    event.region,
+    List.fromArray(event.resources),
+    event.source,
+    event.detail,
+  );
 }
