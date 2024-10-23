@@ -133,22 +133,22 @@ pub type ApiGatewayEventRequestContextHttp {
 
 pub type ApiGatewayEventRequestContextAuthentication {
   ApiGatewayEventRequestContextAuthentication(
-    client_cert: APIGatewayEventClientCertificate,
+    client_cert: ApiGatewayEventClientCertificate,
   )
 }
 
-pub type APIGatewayEventClientCertificate {
-  APIGatewayEventClientCertificate(
+pub type ApiGatewayEventClientCertificate {
+  ApiGatewayEventClientCertificate(
     client_cert_pem: String,
     issuer_dn: String,
     serial_number: String,
     subject_dn: String,
-    validity: APIGatewayEventValidity,
+    validity: ApiGatewayEventValidity,
   )
 }
 
-pub type APIGatewayEventValidity {
-  APIGatewayEventValidity(not_after: String, not_before: String)
+pub type ApiGatewayEventValidity {
+  ApiGatewayEventValidity(not_after: String, not_before: String)
 }
 
 pub type ApiGatewayEventRequestContextIamAuthorizer {
@@ -299,13 +299,13 @@ pub fn api_gateway_proxy_v2_handler(
 
 // --- FFI --------------------------------------------------------------------
 
-@external(javascript, "./glambda_ffi.mjs", "to_api_gateway_proxy_event_v2")
+@external(javascript, "./glambda_ffi.mjs", "toApiGatewayProxyEventV2")
 pub fn to_api_gateway_proxy_event_v2(event: JsEvent) -> ApiGatewayProxyEventV2
 
-@external(javascript, "./glambda_ffi.mjs", "from_api_gateway_proxy_result_v2")
+@external(javascript, "./glambda_ffi.mjs", "fromApiGatewayProxyResultV2")
 pub fn from_api_gateway_proxy_result_v2(
   result: ApiGatewayProxyResultV2,
 ) -> JsResult
 
-@external(javascript, "./glambda_ffi.mjs", "to_context")
+@external(javascript, "./glambda_ffi.mjs", "toContext")
 fn to_context(ctx: JsContext) -> Context

@@ -45,13 +45,13 @@ ApiGatewayProxyEventV2(
       source_ip: "IP",
       user_agent: "agent",
     ),
-    authentication: Some(ApiGatewayEventRequestContextAuthentication(client_cert: APIGatewayEventClientCertificate(
+    authentication: Some(ApiGatewayEventRequestContextAuthentication(client_cert: ApiGatewayEventClientCertificate(
       client_cert_pem: "-----BEGIN CERTIFICATE-----
 MIIEZTCCAk0CAQEwDQ...",
       issuer_dn: "C=US,ST=Washington,L=Seattle,O=Amazon Web Services,OU=Security,CN=My Private CA",
       serial_number: "1",
       subject_dn: "C=US,ST=Washington,L=Seattle,O=Amazon Web Services,OU=Security,CN=My Client",
-      validity: APIGatewayEventValidity(
+      validity: ApiGatewayEventValidity(
         not_after: "Aug  5 00:28:21 2120 GMT",
         not_before: "Aug 29 00:28:21 2020 GMT",
       ),

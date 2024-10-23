@@ -11,16 +11,16 @@ import {
   Jwt,
   Lambda,
   ApiGatewayEventRequestContextHttp,
-  APIGatewayEventClientCertificate,
+  ApiGatewayEventClientCertificate,
   Context,
   CognitoIdentity,
   ClientContext,
   ClientContextClient,
   ClientContextEnv,
-  APIGatewayEventValidity,
+  ApiGatewayEventValidity,
 } from "./glambda.mjs";
 
-export function to_api_gateway_proxy_event_v2(event) {
+export function toApiGatewayProxyEventV2(event) {
   return new ApiGatewayProxyEventV2(
     event.version,
     event.routeKey,
@@ -31,30 +31,30 @@ export function to_api_gateway_proxy_event_v2(event) {
     maybeDict(event.queryStringParameters),
     maybeDict(event.pathParameters),
     maybeDict(event.stageVariables),
-    to_request_context(event.requestContext),
+    toRequestContext(event.requestContext),
     maybe(event.body),
     event.isBase64Encoded,
   );
 }
 
-function to_request_context(ctx) {
+function toRequestContext(ctx) {
   return new ApiGatewayRequestContextV2(
     ctx.routeKey,
     ctx.accountId,
     ctx.stage,
     ctx.requestId,
-    maybe(to_authorizer(ctx.authorizer)),
+    maybe(toAuthorizer(ctx.authorizer)),
     ctx.apiId,
     ctx.domainName,
     ctx.domainPrefix,
     ctx.time,
     ctx.timeEpoch,
-    to_http(ctx.http),
-    maybe(to_authentication(ctx.authentication)),
+    toHttp(ctx.http),
+    maybe(toAuthentication(ctx.authentication)),
   );
 }
 
-function to_http(http) {
+function toHttp(http) {
   return new ApiGatewayEventRequestContextHttp(
     http.method,
     http.path,
@@ -64,46 +64,46 @@ function to_http(http) {
   );
 }
 
-function to_authentication(auth) {
+function toAuthentication(auth) {
   if (!auth) {
     return undefined;
   }
   return new ApiGatewayEventRequestContextAuthentication(
-    to_client_cert(auth.clientCert),
+    toClientCert(auth.clientCert),
   );
 }
 
-function to_client_cert(cert) {
-  return new APIGatewayEventClientCertificate(
+function toClientCert(cert) {
+  return new ApiGatewayEventClientCertificate(
     cert.clientCertPem,
     cert.issuerDN,
     cert.serialNumber,
     cert.subjectDN,
-    to_validity(cert.validity),
+    toValidity(cert.validity),
   );
 }
 
-function to_validity(validity) {
-  return new APIGatewayEventValidity(validity.notAfter, validity.notBefore);
+function toValidity(validity) {
+  return new ApiGatewayEventValidity(validity.notAfter, validity.notBefore);
 }
-function to_authorizer(auth) {
+function toAuthorizer(auth) {
   if (!auth) {
     return undefined;
   }
   if (auth.iam) {
-    return new Iam(to_iam_authorizer(auth.iam));
+    return new Iam(toIamAuthorizer(auth.iam));
   }
   if (auth.jwt) {
     return new Jwt(
       auth.principalId,
       auth.integrationLatency,
-      to_jwt_authorizer(auth.jwt),
+      toJwtAuthorizer(auth.jwt),
     );
   }
   return new Lambda(auth.lambda);
 }
 
-function to_iam_authorizer(iam) {
+function toIamAuthorizer(iam) {
   return new ApiGatewayEventRequestContextIamAuthorizer(
     iam.accessKey,
     iam.accountId,
@@ -114,7 +114,7 @@ function to_iam_authorizer(iam) {
   );
 }
 
-function to_jwt_authorizer(jwt) {
+function toJwtAuthorizer(jwt) {
   return new ApiGatewayEventRequestContextJwtAuthorizer(
     jwt.claims,
     maybeList(jwt.scopes),
@@ -142,7 +142,7 @@ function maybeDict(a) {
   return new None();
 }
 
-export function from_api_gateway_proxy_result_v2(result) {
+export function fromApiGatewayProxyResultV2(result) {
   return {
     statusCode: result.status_code,
     headers: Object.fromEntries(result.headers.entries()),
@@ -152,7 +152,7 @@ export function from_api_gateway_proxy_result_v2(result) {
   };
 }
 
-export function to_context(ctx) {
+export function toContext(ctx) {
   return new Context(
     ctx.callbackWaitsForEmptyEventLoop,
     ctx.functionName,
@@ -162,12 +162,12 @@ export function to_context(ctx) {
     ctx.awsRequestId,
     ctx.logGroupName,
     ctx.logStreamName,
-    maybe(to_cognito_identity(ctx.identity)),
-    maybe(to_client_context(ctx.clientContext)),
+    maybe(toCognitoIdentity(ctx.identity)),
+    maybe(toClientContext(ctx.clientContext)),
   );
 }
 
-function to_cognito_identity(identity) {
+function toCognitoIdentity(identity) {
   if (!identity) {
     return undefined;
   }
@@ -177,18 +177,18 @@ function to_cognito_identity(identity) {
   );
 }
 
-function to_client_context(ctx) {
+function toClientContext(ctx) {
   if (!ctx) {
     return undefined;
   }
   return new ClientContext(
-    to_client_context_client(ctx.client),
+    toClientContextClient(ctx.client),
     maybe(ctx.custom),
-    to_client_context_env(ctx.env),
+    toClientContextEnv(ctx.env),
   );
 }
 
-function to_client_context_client(client) {
+function toClientContextClient(client) {
   return new ClientContextClient(
     client.appTitle,
     client.appVersionName,
@@ -197,7 +197,7 @@ function to_client_context_client(client) {
   );
 }
 
-function to_client_context_env(env) {
+function toClientContextEnv(env) {
   return new ClientContextEnv(
     env.platformVersion,
     env.platform,
