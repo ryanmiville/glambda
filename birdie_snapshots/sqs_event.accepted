@@ -1,0 +1,31 @@
+---
+version: 1.2.3
+title: SQS event
+file: ./test/glambda_test.gleam
+test_name: sqs_event_test
+---
+SqsEvent(records: [
+  SqsRecord(
+    message_id: "6cfbd0a8-f7ff-4a02-ba30-5c903f1a8b63",
+    receipt_handle: "AQEBR3x8seJWvgENTZDqpZv6inIs+Bi496ihA/djTyAALXS9JsAwNnOzgip1vnzUNlVb8oFtbvBem64Ea+oonUWRfMKXS1Xi22PsPfbrmb8j8XK4U1tG2LIfMEv+gTwb0Y5079y/Jp+Z0tN1uf2CjgisgA3DqCGs/sNWjH3qfCkdnx3CfQjjw5PHvvJNMEs2b+so9KyexTHiS1NkQQRbIE2aMPdQd4H96OW6KciGAvgphqWBlxkY6/Qrr1HP+2C7W446DTVIfD9LoWS//UzDX CvaNeW8aAE+ZkF2CDjnRQO9K0uVypxXE+aA9fQnq3gyumAQ+GvvhrfXiw4MHnAvrDL0EcX+znQpk4WYNR6mfsXFGuTzST5M9bWbwa3VfRvXvt0Ngk28pxvd5Clhe4gL9DtknXC6/7vDHndiYEOhaC7lqqE=",
+    body: "Hello from the subscriber",
+    attributes: SqsRecordAttributes(
+      aws_trace_header: None,
+      approximate_receive_count: "1",
+      sent_timestamp: "1729789931673",
+      sender_id: "AROA4MTWMMW6B2A6JRWWH:sqs-ryanmiville-MyAppFunction",
+      approximate_first_receive_timestamp: "1729789931679",
+      sequence_number: None,
+      message_group_id: None,
+      message_deduplication_id: None,
+      dead_letter_queue_source_arn: None,
+    ),
+    message_attributes: dict.from_list([
+      ,
+    ]),
+    md5_of_body: "e09fb73883f28f5d83a8ddbedcd8a1f5",
+    event_source: "aws:sqs",
+    event_source_arn: "arn:aws:sqs:us-east-1:000000000000:sqs-ryanmiville-MyQueueQueue",
+    aws_region: "us-east-1",
+  ),
+])

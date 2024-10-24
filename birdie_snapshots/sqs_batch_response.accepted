@@ -1,0 +1,13 @@
+---
+version: 1.2.3
+title: SQS batch response
+file: ./test/glambda_test.gleam
+test_name: sqs_response_test
+---
+{
+  "batchItemFailures": [
+    {
+      "itemIdentifier": "item_id"
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 import birdie
 import glambda.{
   type ApiGatewayProxyResultV2, type JsEvent, ApiGatewayProxyResultV2,
+  SqsBatchItemFailure, SqsBatchResponse,
 }
 import gleam/dict
 import gleam/option.{None, Some}
@@ -94,6 +95,27 @@ pub fn api_gateway_v2_http_response_valid_empty_fields_test() {
   |> glambda.from_api_gateway_proxy_result_v2
   |> stringify
   |> birdie.snap("API Gateway V2 HTTP Response with valid empty fields")
+}
+
+pub fn eventbridge_event_test() {
+  js_event("./test/testdata/eventbridge-event.json")
+  |> glambda.to_eventbridge_event
+  |> format
+  |> birdie.snap("EventBridge event")
+}
+
+pub fn sqs_event_test() {
+  js_event("./test/testdata/sqs-event.json")
+  |> glambda.to_sqs_event
+  |> format
+  |> birdie.snap("SQS event")
+}
+
+pub fn sqs_response_test() {
+  SqsBatchResponse([SqsBatchItemFailure("item_id")])
+  |> glambda.from_sqs_batch_response
+  |> stringify
+  |> birdie.snap("SQS batch response")
 }
 
 // pub fn wisp_request_test() {

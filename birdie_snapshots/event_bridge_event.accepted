@@ -1,0 +1,21 @@
+---
+version: 1.2.3
+title: EventBridge event
+file: ./test/glambda_test.gleam
+test_name: eventbridge_event_test
+---
+EventBridgeEvent(
+  id: "2ae770d1-0fca-7b58-8c30-9eb62405a12f",
+  version: "0",
+  account: "000000000000",
+  time: "2024-10-24T17:20:54Z",
+  region: "us-east-1",
+  resources: [],
+  source: "eventbridge.ryanmiville",
+  detail: dict.from_list([
+    #("metadata", dict.from_list([])),
+    #("properties", dict.from_list([
+      #("foo", "hello"),
+    ])),
+  ]),
+)

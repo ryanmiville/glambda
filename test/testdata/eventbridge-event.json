@@ -1,0 +1,11 @@
+{
+  "version": "0",
+  "id": "2ae770d1-0fca-7b58-8c30-9eb62405a12f",
+  "detail-type": "app.myevent",
+  "source": "eventbridge.ryanmiville",
+  "account": "000000000000",
+  "time": "2024-10-24T17:20:54Z",
+  "region": "us-east-1",
+  "resources": [],
+  "detail": { "metadata": {}, "properties": { "foo": "hello" } }
+}

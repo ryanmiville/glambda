@@ -1,0 +1,20 @@
+{
+  "Records": [
+    {
+      "messageId": "6cfbd0a8-f7ff-4a02-ba30-5c903f1a8b63",
+      "receiptHandle": "AQEBR3x8seJWvgENTZDqpZv6inIs+Bi496ihA/djTyAALXS9JsAwNnOzgip1vnzUNlVb8oFtbvBem64Ea+oonUWRfMKXS1Xi22PsPfbrmb8j8XK4U1tG2LIfMEv+gTwb0Y5079y/Jp+Z0tN1uf2CjgisgA3DqCGs/sNWjH3qfCkdnx3CfQjjw5PHvvJNMEs2b+so9KyexTHiS1NkQQRbIE2aMPdQd4H96OW6KciGAvgphqWBlxkY6/Qrr1HP+2C7W446DTVIfD9LoWS//UzDX CvaNeW8aAE+ZkF2CDjnRQO9K0uVypxXE+aA9fQnq3gyumAQ+GvvhrfXiw4MHnAvrDL0EcX+znQpk4WYNR6mfsXFGuTzST5M9bWbwa3VfRvXvt0Ngk28pxvd5Clhe4gL9DtknXC6/7vDHndiYEOhaC7lqqE=",
+      "body": "Hello from the subscriber",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1729789931673",
+        "SenderId": "AROA4MTWMMW6B2A6JRWWH:sqs-ryanmiville-MyAppFunction",
+        "ApproximateFirstReceiveTimestamp": "1729789931679"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "e09fb73883f28f5d83a8ddbedcd8a1f5",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:us-east-1:000000000000:sqs-ryanmiville-MyQueueQueue",
+      "awsRegion": "us-east-1"
+    }
+  ]
+}
