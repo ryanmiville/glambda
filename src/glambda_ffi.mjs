@@ -19,6 +19,12 @@ import {
   ClientContextEnv,
   ApiGatewayEventValidity,
   EventBridgeEvent,
+  SqsEvent,
+  SqsRecord,
+  SqsRecordAttributes,
+  SqsMessageAttribute,
+  SqsBatchResponse,
+  SqsBatchItemFailure,
 } from "./glambda.mjs";
 
 export function toApiGatewayProxyEventV2(event) {
@@ -224,4 +230,68 @@ export function toEventBridgeEvent(event) {
     event.source,
     event.detail,
   );
+}
+
+export function toSqsEvent(event) {
+  return new SqsEvent(List.fromArray(event.Records.map(toSqsRecord)));
+}
+
+function toSqsRecord(record) {
+  return new SqsRecord(
+    record.messageId,
+    record.receiptHandle,
+    record.body,
+    toSqsRecordAttributes(record.attributes),
+    toMessageAttributes(record.messageAttributes),
+    record.md5OfBody,
+    record.eventSource,
+    record.eventSourceARN,
+    record.awsRegion,
+  );
+}
+
+function toSqsRecordAttributes(attrs) {
+  return new SqsRecordAttributes(
+    maybe(attrs.AWSTraceHeader),
+    attrs.ApproximateReceiveCount,
+    attrs.SentTimestamp,
+    attrs.SenderId,
+    attrs.ApproximateFirstReceiveTimestamp,
+    maybe(attrs.SequenceNumber),
+    maybe(attrs.MessageGroupId),
+    maybe(attrs.MessageDeduplicationId),
+    maybe(attrs.DeadLetterQueueSourceArn),
+  );
+}
+
+function toMessageAttributes(attrs) {
+  let entries = Object.entries(attrs).map(([key, value]) => {
+    let v = toSqsMessageAttribute(value);
+    return [key, v];
+  });
+  return $dict.from_list(List.fromArray(entries));
+}
+
+function toSqsMessageAttribute(attr) {
+  return new SqsMessageAttribute(
+    maybe(attr.stringValue),
+    maybe(attr.binaryValue),
+    maybe(attr.stringListValue),
+    maybe(attr.binaryListValue),
+    attr.dataType,
+  );
+}
+
+export function fromSqsBatchResponse(response) {
+  return {
+    batchItemFailures: response.batch_item_failures
+      .toArray()
+      .map(fromSqsBatchItemFailure),
+  };
+}
+
+function fromSqsBatchItemFailure(failure) {
+  return {
+    itemIdentifier: failure.item_identifier,
+  };
 }

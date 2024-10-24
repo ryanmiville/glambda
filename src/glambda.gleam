@@ -364,6 +364,22 @@ pub fn eventbridge_handler(handler: Handler(EventBridgeEvent, Nil)) -> JsHandler
   }
 }
 
+pub fn sqs_handler(
+  handler: Handler(SqsEvent, Option(SqsBatchResponse)),
+) -> JsHandler {
+  fn(event: JsEvent, ctx: JsContext) -> Promise(JsResult) {
+    let event = to_sqs_event(event)
+    let ctx = to_context(ctx)
+    handler(event, ctx)
+    |> promise.map(fn(resp) {
+      case resp {
+        Some(resp) -> from_sqs_batch_response(resp)
+        None -> Void
+      }
+    })
+  }
+}
+
 // --- FFI --------------------------------------------------------------------
 
 @external(javascript, "./glambda_ffi.mjs", "toApiGatewayProxyEventV2")
@@ -379,3 +395,9 @@ fn to_context(ctx: JsContext) -> Context
 
 @external(javascript, "./glambda_ffi.mjs", "toEventBridgeEvent")
 pub fn to_eventbridge_event(event: JsEvent) -> EventBridgeEvent
+
+@external(javascript, "./glambda_ffi.mjs", "toSqsEvent")
+pub fn to_sqs_event(event: JsEvent) -> SqsEvent
+
+@external(javascript, "./glambda_ffi.mjs", "fromSqsBatchResponse")
+pub fn from_sqs_batch_response(result: SqsBatchResponse) -> JsResult
