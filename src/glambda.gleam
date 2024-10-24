@@ -193,6 +193,58 @@ pub type EventBridgeEvent {
   )
 }
 
+// --- SQS --------------------------------------------------------------------
+
+pub type SqsEvent {
+  SqsEvent(records: List(SqsRecord))
+}
+
+pub type SqsRecord {
+  SqsRecord(
+    message_id: String,
+    receipt_handle: String,
+    body: String,
+    attributes: SqsRecordAttributes,
+    message_attributes: Dict(String, SqsMessageAttribute),
+    md5_of_body: String,
+    event_source: String,
+    event_source_arn: String,
+    aws_region: String,
+  )
+}
+
+pub type SqsRecordAttributes {
+  SqsRecordAttributes(
+    aws_trace_header: Option(String),
+    approximate_receive_count: String,
+    sent_timestamp: String,
+    sender_id: String,
+    approximate_first_receive_timestamp: String,
+    sequence_number: Option(String),
+    message_group_id: Option(String),
+    message_deduplication_id: Option(String),
+    dead_letter_queue_source_arn: Option(String),
+  )
+}
+
+pub type SqsMessageAttribute {
+  SqsMessageAttribute(
+    string_value: Option(String),
+    binary_value: Option(String),
+    string_list_values: Option(List(String)),
+    binary_list_values: Option(List(String)),
+    data_type: String,
+  )
+}
+
+pub type SqsBatchResponse {
+  SqsBatchResponse(batch_item_failures: List(SqsBatchItemFailure))
+}
+
+pub type SqsBatchItemFailure {
+  SqsBatchItemFailure(item_identifier: String)
+}
+
 // --- Adapters ---------------------------------------------------------------
 
 pub fn http_handler(
