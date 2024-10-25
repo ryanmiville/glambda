@@ -3,7 +3,7 @@
 export default $config({
   app(input) {
     return {
-      name: "simple-example",
+      name: "apigw",
       removal: input?.stage === "production" ? "retain" : "remove",
       home: "aws",
       providers: {
@@ -15,8 +15,8 @@ export default $config({
     };
   },
   async run() {
-    const api = new sst.aws.Function("SimpleExample", {
-      handler: "build/dev/javascript/handler/handler.handler",
+    const api = new sst.aws.Function("ApiGatewayExample", {
+      handler: "build/dev/javascript/apigw/apigw.handler",
       url: true,
     });
     return {

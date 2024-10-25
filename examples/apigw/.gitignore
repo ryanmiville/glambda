@@ -1,0 +1,9 @@
+*.beam
+*.ez
+/build
+erl_crash.dump
+
+# sst
+.sst
+node_modules
+.DS_Store
