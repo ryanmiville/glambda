@@ -1,0 +1,10 @@
+---
+version: 1.2.3
+title: Minimal HTTP response
+---
+{
+  "statusCode": 200,
+  "headers": {},
+  "isBase64Encoded": false,
+  "cookies": []
+}

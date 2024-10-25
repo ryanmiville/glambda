@@ -1,0 +1,29 @@
+---
+version: 1.2.3
+title: HTTP request
+---
+Request(
+  method: Get,
+  headers: [
+    #("user-agent", "curl/7.58.0"),
+    #("accept", "*/*"),
+    #(
+      "host",
+      "aaaaaaaaaa.execute-api.us-west-2.amazonaws.com",
+    ),
+    #("x-forwarded-proto", "https"),
+    #("x-forwarded-for", "1.2.3.4"),
+    #("content-length", "0"),
+    #(
+      "x-amzn-trace-id",
+      "Root=1-5e9f0c65-1de4d666d4dd26aced652b6c",
+    ),
+    #("x-forwarded-port", "443"),
+  ],
+  body: None,
+  scheme: Https,
+  host: "aaaaaaaaaa.execute-api.us-west-2.amazonaws.com",
+  port: None,
+  path: "/",
+  query: None,
+)

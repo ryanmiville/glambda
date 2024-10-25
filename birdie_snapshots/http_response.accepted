@@ -1,6 +1,6 @@
 ---
 version: 1.2.3
-title: API Gateway V2 HTTP Response
+title: HTTP response
 ---
 {
   "statusCode": 200,
@@ -14,6 +14,7 @@ title: API Gateway V2 HTTP Response
     "X-Forwarded-For": "192.168.100.1, 192.168.1.1",
     "CloudFront-Is-Desktop-Viewer": "true",
     "Via": "1.1 fb7cca60f0ecd82ce07790c9c5eef16c.cloudfront.net (CloudFront)",
+    "set-cookie": "cookie1=1; cookie2=2",
     "CloudFront-Is-Tablet-Viewer": "false",
     "X-Amz-Cf-Id": "nBsWBOrSHMgnaROZJK1wGCZ9PcRcSpq_oSXZNQwQ10OTZL4cimZo3g==",
     "CloudFront-Is-Mobile-Viewer": "false",
