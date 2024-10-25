@@ -1,3 +1,35 @@
+//// This module provides types and adapters to write AWS Lambda functions that target the Node runtime.
+////
+//// # Example
+////
+//// You can use handle API Gateway events using Gleam HTTP types
+////
+//// ```gleam
+//// fn handle_request(request: Request(Option(String)), ctx: Context) -> Promise(Response(Option(String))) {
+////   Response(200, [], None)
+////   |> promise.resolve
+//// }
+////
+//// // this is the actual lambda function
+//// fn handler(event, ctx) {
+////   glambda.http_handler(handle_request)
+//// }
+//// ```
+////
+//// This module also supports other types of events, such as EventBridge.
+////
+//// ```gleam
+//// fn handle_request(event: EventBridgeEvent, ctx: Context) -> Promise(Nil) {
+////   io.debug(event)
+////   promise.resolve(Nil)
+//// }
+////
+//// // this is the actual lambda function
+//// fn handler(event, ctx) {
+////   glambda.eventbridge_event_handler(handle_request)
+//// }
+//// ```
+
 import gleam/bit_array
 import gleam/dict.{type Dict}
 import gleam/dynamic.{type Dynamic}
@@ -11,18 +43,23 @@ import gleam/regex
 import gleam/result
 import gleam/string
 
+/// Represents the raw JavaScript event that invoked the lambda.
 pub type JsEvent
 
+/// Represents the raw JavaScript context for the lambda.
 pub type JsContext
 
+/// Represents the raw JavaScript response for the lambda.
 pub type JsResult {
   JsResult
   Void
 }
 
+/// Represents the raw Javascript handler for the lambda.
 pub type JsHandler =
   fn(JsEvent, JsContext) -> Promise(JsResult)
 
+/// Alias for a strongly typed lambda function
 pub type Handler(event, result) =
   fn(event, Context) -> Promise(result)
 
@@ -247,6 +284,8 @@ pub type SqsBatchItemFailure {
 
 // --- Adapters ---------------------------------------------------------------
 
+/// Wraps an HTTP handler to create a lambda function to handle API Gateway proxy
+/// events
 pub fn http_handler(
   handler: Handler(Request(Option(String)), Response(Option(String))),
 ) -> JsHandler {
@@ -344,6 +383,8 @@ fn is_content_encoding_binary(content_encoding: String) -> Bool {
   regex.check(re, content_encoding)
 }
 
+/// Wraps a handler to create a lambda function to handle API Gateway proxy
+/// events
 pub fn api_gateway_proxy_v2_handler(
   handler: Handler(ApiGatewayProxyEventV2, ApiGatewayProxyResultV2),
 ) -> JsHandler {
@@ -355,6 +396,8 @@ pub fn api_gateway_proxy_v2_handler(
   }
 }
 
+/// Wraps a handler to create a lambda function to handle EventBridge
+/// events
 pub fn eventbridge_handler(handler: Handler(EventBridgeEvent, Nil)) -> JsHandler {
   fn(event: JsEvent, ctx: JsContext) -> Promise(JsResult) {
     let event = to_eventbridge_event(event)
@@ -364,6 +407,8 @@ pub fn eventbridge_handler(handler: Handler(EventBridgeEvent, Nil)) -> JsHandler
   }
 }
 
+/// Wraps a handler to create a lambda function to handle SQS
+/// events
 pub fn sqs_handler(
   handler: Handler(SqsEvent, Option(SqsBatchResponse)),
 ) -> JsHandler {
