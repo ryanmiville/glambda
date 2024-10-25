@@ -297,7 +297,7 @@ pub fn http_handler(
   })
 }
 
-pub fn create_request(event: ApiGatewayProxyEventV2) -> Request(Option(String)) {
+fn create_request(event: ApiGatewayProxyEventV2) -> Request(Option(String)) {
   let body = event.body
   let method =
     event.request_context.http.method
@@ -428,21 +428,19 @@ pub fn sqs_handler(
 // --- FFI --------------------------------------------------------------------
 
 @external(javascript, "./glambda_ffi.mjs", "toApiGatewayProxyEventV2")
-pub fn to_api_gateway_proxy_event_v2(event: JsEvent) -> ApiGatewayProxyEventV2
+fn to_api_gateway_proxy_event_v2(event: JsEvent) -> ApiGatewayProxyEventV2
 
 @external(javascript, "./glambda_ffi.mjs", "fromApiGatewayProxyResultV2")
-pub fn from_api_gateway_proxy_result_v2(
-  result: ApiGatewayProxyResultV2,
-) -> JsResult
+fn from_api_gateway_proxy_result_v2(result: ApiGatewayProxyResultV2) -> JsResult
 
 @external(javascript, "./glambda_ffi.mjs", "toContext")
 fn to_context(ctx: JsContext) -> Context
 
 @external(javascript, "./glambda_ffi.mjs", "toEventBridgeEvent")
-pub fn to_eventbridge_event(event: JsEvent) -> EventBridgeEvent
+fn to_eventbridge_event(event: JsEvent) -> EventBridgeEvent
 
 @external(javascript, "./glambda_ffi.mjs", "toSqsEvent")
-pub fn to_sqs_event(event: JsEvent) -> SqsEvent
+fn to_sqs_event(event: JsEvent) -> SqsEvent
 
 @external(javascript, "./glambda_ffi.mjs", "fromSqsBatchResponse")
-pub fn from_sqs_batch_response(result: SqsBatchResponse) -> JsResult
+fn from_sqs_batch_response(result: SqsBatchResponse) -> JsResult

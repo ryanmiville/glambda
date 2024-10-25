@@ -7,7 +7,7 @@ Write AWS Lambda functions in Gleam!
 
 Write your Lambda function as an [http](https://github.com/gleam-lang/http) handler, or accept direct events as normal Gleam types.
 
-Glambda works by compiling your Gleam code to JavaScript, and then using the AWS Lambda Node.js runtime to run your code.
+Glambda only supports the JavaScript target. Your compiled code uses the AWS Lambda Node.js runtime.
 
 ```sh
 gleam add glambda
@@ -35,6 +35,7 @@ fn handle_request(
   |> promise.resolve
 }
 
+// This is the actual function lambda invokes
 pub fn handler(event, ctx) {
   glambda.http_handler(handle_request)(event, ctx)
 }
@@ -65,13 +66,18 @@ fn event_handler(
   |> promise.resolve
 }
 
+// This is the actual function lambda invokes
 pub fn handler(event, ctx) {
   glambda.api_gateway_proxy_v2_handler(event_handler)(event, ctx)
 }
 ```
 
+Check out the [examples](https://github.com/ryanmiville/glambda/tree/main/examples) directory for examples of each supported event type, deployable with [SST](https://github.com/sst/sst).
+
 ## Supported Events
-* `ApiGatewayProxyEventV2`
+* `ApiGatewayProxyEventV2` (can be handled directly or as a `Request(Option(String))`)
+* `EventBridgeEvent`
+* `SqsEvent`
 
 Further documentation can be found at <https://hexdocs.pm/glambda>.
 
