@@ -1,0 +1,17 @@
+{
+  "name": "apigw",
+  "type": "module",
+  "scripts": {
+    "dev": "gleam build && sst dev"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "8.10.145",
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "sst": "3.2.59"
+  }
+}

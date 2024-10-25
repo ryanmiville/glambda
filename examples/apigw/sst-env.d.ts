@@ -6,7 +6,7 @@ import "sst"
 export {}
 declare module "sst" {
   export interface Resource {
-    "SimpleExample": {
+    "ApiGatewayExample": {
       "name": string
       "type": "sst.aws.Function"
       "url": string

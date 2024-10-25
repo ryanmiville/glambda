@@ -1,22 +1,35 @@
 //// This module provides types and adapters to write AWS Lambda functions that target the Node runtime.
 ////
-//// # Example
+//// The core type of glambda is the `Handler(event, result)`, which is simply a
+//// function, `fn(event, Context) -> Promise(result)`. Then you use one of the
+//// handler adapters to wrap your handler to make it compatible with AWS Lambda.
 ////
-//// You can use handle API Gateway events using Gleam HTTP types
+//// The adapter creates a new function,
+//// `fn(JsEvent, JsContext) -> Promise(JsResult)`. You shouldn't need to use
+//// these types in your code. In fact, you typically do not need to reference
+//// them at all due to type inference.
+////
+//// # Examples
+////
+//// You can handle API Gateway proxy v2 events using Gleam HTTP types
 ////
 //// ```gleam
-//// fn handle_request(request: Request(Option(String)), ctx: Context) -> Promise(Response(Option(String))) {
+//// fn handle_request(
+////   request: Request(Option(String)),
+////   ctx: Context,
+//// ) -> Promise(Response(Option(String))) {
 ////   Response(200, [], None)
 ////   |> promise.resolve
 //// }
 ////
-//// // this is the actual lambda function
-//// fn handler(event, ctx) {
-////   glambda.http_handler(handle_request)
+//// // this is the actual function lambda will invoke
+//// pub fn handler(event, ctx) {
+////   glambda.http_handler(handle_request)(event, ctx)
 //// }
 //// ```
 ////
-//// This module also supports other types of events, such as EventBridge.
+//// You can also handle the API Gateway event directly, or several other
+//// supported event types, such as EventBridge.
 ////
 //// ```gleam
 //// fn handle_request(event: EventBridgeEvent, ctx: Context) -> Promise(Nil) {
@@ -24,11 +37,17 @@
 ////   promise.resolve(Nil)
 //// }
 ////
-//// // this is the actual lambda function
-//// fn handler(event, ctx) {
-////   glambda.eventbridge_event_handler(handle_request)
+//// // this is the actual function lambda will invoke
+//// pub fn handler(event, ctx) {
+////   glambda.eventbridge_event_handler(handle_request)(event, ctx)
 //// }
 //// ```
+//// # Supported Events
+//// * `ApiGatewayProxyEventV2` (handled directly or as a `Request(Option(String))`)
+//// * `EventBridgeEvent`
+//// * `SqsEvent`
+////
+//// Reference the `*_handler` functions for the correct signatures.
 
 import gleam/bit_array
 import gleam/dict.{type Dict}
