@@ -58,7 +58,7 @@ import gleam/http/response.{type Response, Response}
 import gleam/javascript/promise.{type Promise}
 import gleam/list
 import gleam/option.{type Option, None, Some}
-import gleam/regex
+import gleam/regexp
 import gleam/result
 import gleam/string
 
@@ -391,15 +391,15 @@ fn get_cookies(response: Response(_)) -> List(String) {
 
 fn is_content_type_binary(content_type: String) -> Bool {
   let assert Ok(re) =
-    regex.from_string(
+    regexp.from_string(
       "!/^(text\\/(plain|html|css|javascript|csv).*|application\\/(.*json|.*xml).*|image\\/svg\\+xml.*)$/",
     )
-  regex.check(re, content_type)
+  regexp.check(re, content_type)
 }
 
 fn is_content_encoding_binary(content_encoding: String) -> Bool {
-  let assert Ok(re) = regex.from_string("/^(gzip|deflate|compress|br)/")
-  regex.check(re, content_encoding)
+  let assert Ok(re) = regexp.from_string("/^(gzip|deflate|compress|br)/")
+  regexp.check(re, content_encoding)
 }
 
 /// Wraps a handler to create a lambda function to handle API Gateway proxy
