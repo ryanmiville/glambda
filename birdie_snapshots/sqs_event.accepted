@@ -1,8 +1,6 @@
 ---
-version: 1.2.3
+version: 1.2.4
 title: SQS event
-file: ./test/glambda_test.gleam
-test_name: sqs_event_test
 ---
 SqsEvent(records: [
   SqsRecord(
@@ -21,8 +19,7 @@ SqsEvent(records: [
       dead_letter_queue_source_arn: None,
     ),
     message_attributes: dict.from_list([
-      ,
-    ]),
+      ]),
     md5_of_body: "e09fb73883f28f5d83a8ddbedcd8a1f5",
     event_source: "aws:sqs",
     event_source_arn: "arn:aws:sqs:us-east-1:000000000000:sqs-ryanmiville-MyQueueQueue",

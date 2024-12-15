@@ -1,8 +1,6 @@
 ---
-version: 1.2.3
+version: 1.2.4
 title: API Gateway V2 HTTP request with no authorizer
-file: ./test/glambda_test.gleam
-test_name: api_gateway_v2_http_request_no_authorizer_test
 ---
 ApiGatewayProxyEventV2(
   version: "2.0",
@@ -13,9 +11,15 @@ ApiGatewayProxyEventV2(
   headers: dict.from_list([
     #("accept", "*/*"),
     #("content-length", "0"),
-    #("host", "aaaaaaaaaa.execute-api.us-west-2.amazonaws.com"),
+    #(
+      "host",
+      "aaaaaaaaaa.execute-api.us-west-2.amazonaws.com",
+    ),
     #("user-agent", "curl/7.58.0"),
-    #("x-amzn-trace-id", "Root=1-5e9f0c65-1de4d666d4dd26aced652b6c"),
+    #(
+      "x-amzn-trace-id",
+      "Root=1-5e9f0c65-1de4d666d4dd26aced652b6c",
+    ),
     #("x-forwarded-for", "1.2.3.4"),
     #("x-forwarded-port", "443"),
     #("x-forwarded-proto", "https"),
