@@ -1,8 +1,8 @@
 name = "glambda"
-version = "0.1.1"
+version = "1.0.0"
 
 description = "Write AWS Lambda functions in Gleam!"
-licences = ["Apache-2.0"]
+licences = ["MIT"]
 repository = { type = "github", user = "ryanmiville", repo = "glambda" }
 
 target = "javascript"
